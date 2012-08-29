@@ -5,7 +5,7 @@
  * Copyright 2012. See COPYING for details.
  */
 
-#include <stdio.h>
+#include <deque>
  
 #include "propertyvisitor.hpp"
 
@@ -48,6 +48,15 @@ protected:
 	 */
 	AbstractProperty(const char* name, Entity* owner);
 	
+	/*! Construct a property with the given name, that has no owner.
+	 * 
+	 * \param	name	Name of the property. See other constructor for detail.
+	 *
+	 * Un-owned properties are used for loading and updating entities, where
+	 * all the properies of the entity to be updated / loaded are not known.
+	 */
+	AbstractProperty(const char* name) : name_(name) {}
+	
 	/*! Protected static method available for concrete Property classes to call.
 	 */
 	template <typename EncapsulatedType>
@@ -66,5 +75,19 @@ protected:
 	const char* name_;
 };
 
+/*! Abstract property collection object. This is required for the persistence
+ * API. It is used to create a collection of properties, not under the ownership
+ * of an entity.
+ * 
+ * \see	PropertyCollection
+ */
+struct AbstractPropertyCollection 
+{
+	const std::deque<AbstractProperty*>& props() const { return props_; }
+
+protected:
+	std::deque<AbstractProperty*> props_;
+	AbstractPropertyCollection() {}
+};
 
 #endif

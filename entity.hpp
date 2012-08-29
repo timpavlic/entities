@@ -8,6 +8,7 @@
 #include <deque>
 #include "abstractproperty.hpp"
 #include "persistenceapi.hpp"
+#include "entception.hpp"
 
 /*! Entities essentially represent a row / record from a database table. This is
  * the record part of the active record pattern.
@@ -27,27 +28,29 @@ struct Entity
 	 * method.
 	 * \return	Whether or not the entity was saved.
 	 */
-	bool save();
+	bool save() throw(Entception&);
 	
-	/*! Update the entity. This calls the entities installed persistence API's update
-	 * method.
-	 * \param	updated	The entity to be updated to. This should have the same entity name.
-	 * \return	Whether or not the entity was updated to the supplied one.
+	/*! Update the entity in persistent storage. This calls the entities
+	 * installed persistence API's update method.
+	 *
+	 * \param	updates	Collection of properties to update this entity with.
+	 *
+	 * \return	Whether or not the entity was updated with the supplied values,
+	 *			also indicating that persistent storage was updated.
 	 */
-	bool update(const Entity& updated);
+	bool update(const AbstractPropertyCollection& updates) throw(Entception&);
 	
 	/*! Load an entity of this entities name, which has matching properties.
-	 * \retval	NULL	No entity could be loaded.
-	 * \return	Newly allocated loaded entity that has all the properties this entity
-	 *			normally has.
+	 * 
+	 * \return	Whether or not this entity was updated with loaded data.
 	 */
-	Entity*	load();
+	bool load(const AbstractPropertyCollection& criteria) throw(Entception&);
 	
 	/*! Delete an entity of this entities name, which has matching properties,
 	 * from persistent storage.
 	 * \return	Whether or not an entity was deleted from persistence.
 	 */
-	bool del();
+	bool del() throw(Entception&);
 	
 	/*! Set the persistence object that should be used when invoking the 
 	 * methods of this entity that will interact with persistent storage
@@ -63,6 +66,12 @@ struct Entity
 	 * \retval	NULL	No property with the specified name could be found.
 	 */
 	AbstractProperty* operator [] (const char* propertyName) const;
+	
+	/*! Check whether or not the supplied property collection is a subset of
+	 * this entity. For this to be true, this entity must have a prop with the
+	 * same name for each property in the collection.
+	 */
+	bool isSubset(const AbstractPropertyCollection& props) const;
 	
 	typedef std::deque<AbstractProperty*> PropertyDeque;
 	

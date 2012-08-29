@@ -46,14 +46,14 @@ struct FlatFilePersistenceApi : public PersistenceApi
 {
 	FlatFilePersistenceApi(const char* filename) : file(filename) {}
 
-	virtual bool save(const Entity& ent) {
+	virtual bool save(const Entity& ent) throw(Entception&) {
 	
 		const Entity::PropertyDeque& props = ent.properties();
 	
 		FlatFileSaveVisitor ffsv(file);
 	
 		file << "{";
-		for ( int i = 0; i < props.size(); ++i ) {
+		for ( size_t i = 0; i < props.size(); ++i ) {
 			file << props[i]->name() << " = ";
 			props[i]->accept(ffsv);
 			
@@ -65,9 +65,14 @@ struct FlatFilePersistenceApi : public PersistenceApi
 	
 		return true;
 	}
-	virtual bool update(const Entity& old, const Entity& updated) { return false; }
-	virtual Entity* load(const Entity& e) { return false; }
-	virtual bool del(const Entity& e) { return false; }
+	virtual bool update(const Entity& old, const AbstractPropertyCollection& updates) throw(Entception&)
+	{ throw Entception("Update not implemented."); }
+	
+	virtual bool load(Entity& e, const AbstractPropertyCollection& criteria) throw(Entception&)
+	{ throw Entception("Load not implemented."); }
+	
+	virtual bool del(const Entity& e) throw(Entception&)
+	{ throw Entception("Del not implemented."); }
 	
 	ofstream file;
 };
