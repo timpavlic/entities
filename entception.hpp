@@ -2,7 +2,7 @@
 #define ENTITIES_EXCEPTIONS_HPP
 /*! \file	exceptions.hpp
  *
- * Copyright 2012. See COPYING for details.
+ * \copyright	Copyright 2012. See COPYING for details.
  *
  * Declaration of the exception classes that are used in the entity library.
  */
@@ -86,7 +86,15 @@ private:
 struct SaveEntception : public Entception
 {
 	/*! Create a save entity exception.*/
-	SaveEntception(const char* file, int lineNo, const Entity* ent, const char* msg);
+	SaveEntception(const char* file, int lineNo, const Entity* ent, const char* msg) {
+		buildmsg(file, lineNo, ent, msg);
+	}
+	SaveEntception(const char* file, int lineNo, const Entity* ent, const std::string& msg) {
+		buildmsg(file, lineNo, ent, msg.c_str());
+	}
+
+private:
+	void buildmsg(const char* file, int lineNo, const Entity* ent, const char* msg);
 };
 
 /*! Macro for creating an entity save exception. Supplies the file and line
@@ -100,22 +108,58 @@ struct SaveEntception : public Entception
 struct UpdateEntception : public Entception
 {
 	/*! Create an update entception. */
-	UpdateEntception(const char* file, int lineNo, const Entity* ent, const char* msg);
+	UpdateEntception(const char* file, int lineNo, const Entity* ent, const char* msg) {
+		buildmsg(file, lineNo, ent, msg);
+	}
+	UpdateEntception(const char* file, int lineNo, const Entity* ent, const std::string& msg) {
+		buildmsg(file, lineNo, ent, msg.c_str());
+	}
+
+private:
+	void buildmsg(const char* file, int lineNo, const Entity* ent, const char* msg);
 };
+
 #define UpdateEntception(ent, msg)	UpdateEntception(__FILE__, __LINE__, ent, msg)
 
+
+/*! Entity exception for load operations. The exception simply adds extra text
+ * to the supplied message to indicate that it was a load that failed.
+ */
 struct LoadEntception : public Entception
 {
 	/*! Create a load entception. */
-	LoadEntception(const char* file, int lineNo, const Entity* ent, const char* msg);
+	LoadEntception(const char* file, int lineNo, const Entity* ent, const char* msg) {
+		buildmsg(file, lineNo, ent, msg);
+	}
+	LoadEntception(const char* file, int lineNo, const Entity* ent, const std::string& msg) {
+		buildmsg(file, lineNo, ent, msg.c_str());
+	}
+
+private:
+	void buildmsg(const char* file, int lineNo, const Entity* ent, const char* msg);
 };
+
 #define LoadEntception(ent, msg)	LoadEntception(__FILE__, __LINE__, ent, msg)
 
+
+/*! Entity exception for delete operations. This exception simply adds extra
+ * text to the supplied message to indicate that it was a delete that failed.
+ */
 struct DelEntception : public Entception
 {
 	/*! Create a delete entity exception. */
-	DelEntception(const char* file, int lineNo, const Entity* ent, const char* msg);
+	DelEntception(const char* file, int lineNo, const Entity* ent, const char* msg) {
+		buildmsg(file, lineNo, ent, msg);
+	}
+	DelEntception(const char* file, int lineNo, const Entity* ent, const std::string& msg) {
+		buildmsg(file, lineNo, ent, msg.c_str());
+	}
+
+private:
+	void buildmsg(const char* file, int lineNo, const Entity* ent, const char* msg);
 };
+
 #define DelEntception(ent, msg)		DelEntception(__FILE__, __LINE__, ent, msg)
+
 
 #endif

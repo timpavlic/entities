@@ -1,6 +1,6 @@
 /*! \file	sqlite3persistenceapi.cpp
  *
- * Copyright 2012. See COPYING for details.
+ * \copyright	Copyright 2012. See COPYING for details.
  */
 #include "entception.hpp"
 
@@ -62,8 +62,7 @@ void Entception::add(const char* file, int lineNo, const char* msg)
 	traces_.push_back(t);
 }
 
-#undef SaveEntception
-SaveEntception::SaveEntception(const char* file, int lineNo, const Entity* ent, const char* msg)
+void SaveEntception::buildmsg(const char* file, int lineNo, const Entity* ent, const char* msg)
 {
 	std::string str("Failed to save a '");
 	str += ent->entitytype();
@@ -73,8 +72,7 @@ SaveEntception::SaveEntception(const char* file, int lineNo, const Entity* ent, 
 	add(file, lineNo, str);
 }
 
-#undef UpdateEntception
-UpdateEntception::UpdateEntception(const char* file, int lineNo, const Entity* ent, const char* msg)
+void UpdateEntception::buildmsg(const char* file, int lineNo, const Entity* ent, const char* msg)
 {
 	std::string str("Failed to update a '");
 	str += ent->entitytype();
@@ -84,8 +82,7 @@ UpdateEntception::UpdateEntception(const char* file, int lineNo, const Entity* e
 	add(file, lineNo, str);
 }
 
-#undef LoadEntception
-LoadEntception::LoadEntception(const char* file, int lineNo, const Entity* ent, const char* msg)
+void LoadEntception::buildmsg(const char* file, int lineNo, const Entity* ent, const char* msg)
 {
 	std::string str("Failed to load a '");
 	str += ent->entitytype();
@@ -95,8 +92,7 @@ LoadEntception::LoadEntception(const char* file, int lineNo, const Entity* ent, 
 	add(file, lineNo, str);
 }
 
-#undef DelEntception
-DelEntception::DelEntception(const char* file, int lineNo, const Entity* ent, const char* msg)
+void DelEntception::buildmsg(const char* file, int lineNo, const Entity* ent, const char* msg)
 {
 	std::string str("Failed to delete a '");
 	str += ent->entitytype();
