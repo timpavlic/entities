@@ -2,10 +2,13 @@
 #define SQLITE3_ENTITY_PERSISTENCE_HPP
 /*! \file	sqlite3persistenceapi.hpp
  *
- * Copyright 2012. See COPYING for details.
+ * \copyright	Copyright 2012. See COPYING for details.
  */
 
-#include "entity.hpp"
+#include "entities/entity.hpp"
+
+// Forward declaration.
+struct sqlite3;
 
 /*! Persistence implementation for SQLite 3. */
 struct Sqlite3PersistenceApi : public PersistenceApi
