@@ -1,9 +1,12 @@
 /*! \file	sqlite3persistenceapi.cpp
  *
- * Copyright 2012. See COPYING for details.
+ * \copyright	Copyright 2012. See COPYING for details.
  */
-#include "sqlite3persistenceapi.hpp"
 #include <sstream>
+
+#include <sqlite3.h>
+
+#include "sqlite3persistenceapi.hpp"
 
 using namespace std;
 
@@ -12,22 +15,13 @@ namespace {
 int sqlite3_callback(void* context, int number, char** something, char** morethings)
 {
 
+	return 0;
 }
 
 // Property visitor implementation.
 //
 // How do we allow library users to define SQLite3 Property visitors for their
-// own types.
-// Perhaps required them to implement a SqliteCustomPropertyVisitor,
-// then this SqliteVisitor can inherit from that, after PropertyVisitorBase
-//
-//
-// User's app would define SqliteCustomPropertyVisitor{ } then include sqlite3
-// factory?
-// would have to have a fixed file name, i guess sqlite3custompropertyvisitor.cpp
-//
-// TRAITS! .... what are they? :(
-//
+// own types.???
 struct SqliteVisitor : public PropertyVisitorBase, PropertyVisitor<double>,
 	PropertyVisitor<int>, PropertyVisitor<unsigned int>, PropertyVisitor<bool>,
 	PropertyVisitor<char>, PropertyVisitor<const char*>
@@ -66,7 +60,7 @@ struct SqliteVisitor : public PropertyVisitorBase, PropertyVisitor<double>,
 	}
 	
 	// Escapes the string.
-	virtual bool visit(const char* s) {
+	virtual bool visit(const char*& s) {
 		ss << "'";
 		for ( unsigned int i=0; s[i]; ++i ) {
 			if ( s[i] == '\'' ) {
@@ -76,6 +70,7 @@ struct SqliteVisitor : public PropertyVisitorBase, PropertyVisitor<double>,
 			}
 		}
 		ss << "'";
+		return true;
 	}
 
 private:
@@ -103,11 +98,11 @@ bool Sqlite3PersistenceApi::save(const Entity& e) throw(Entception&)
 	ss << ") VALUES(";
 	for ( unsigned int i=0; i<props.size(); ++i ) {
 		// Attempt to visit the property.
-		if ( !props[i]->visit(&sv) ) {
+		if ( !props[i]->accept(sv) ) {
 			string msg("Could not visit property '");
 			msg += props[i]->name();
 			msg += '\'';
-			throw SaveEntception(&ent, msg.c_str());
+			throw SaveEntception(&e, msg.c_str());
 		}
 		if ( i < props.size() - 2 ) {	// Add comma between all but last value in query
 			ss << ',';
@@ -145,7 +140,7 @@ bool Sqlite3PersistenceApi::update(const Entity& ent, const AbstractPropertyColl
 	sql << ") VALUES(";
 	for ( unsigned int i = 0; i < newVals.size(); ++i ) {
 		// Attempt to visit the value.
-		if ( !newVals[i].visit(sv) ) {
+		if ( !newVals[i]->accept(sv) ) {
 			string msg("Could not visit update property '");
 			msg += newVals[i]->name();
 			msg += '\'';
@@ -155,13 +150,13 @@ bool Sqlite3PersistenceApi::update(const Entity& ent, const AbstractPropertyColl
 	
 	// Specify the where clause, requiring the entity to be a currently saved on.
 	sql << ") WHERE(";
-	const Entity::PropertyDeque& props = ent.props();
+	const Entity::PropertyDeque& props = ent.properties();
 	for ( unsigned int i = 0; i < props.size(); ++i ) {
 		// Add the property names first.
 		sql << props[i]->name() << '=';
 		
 		// Now attempt to visit the value.
-		if ( !props[i]->visit(sv) ) {
+		if ( !props[i]->accept(sv) ) {
 			string msg("Could not visit match property '");
 			msg += props[i]->name();
 			msg += '\'';
@@ -172,14 +167,13 @@ bool Sqlite3PersistenceApi::update(const Entity& ent, const AbstractPropertyColl
 			sql << ',';
 		}
 	}
-	sql << ");"
+	sql << ");";
 	/* update ent.name values(updates.values) where (match each ent.properties); */
 	
 	// Attempt to execute the query.
 	char* msg;
-	int res = sqlite3_exec(db_, sql.str().c_str(), sqlite3_callback, TODO_UPDATE_CONTEXT_OBJ, &msg);
+	//int res = sqlite3_exec(db_, sql.str().c_str(), sqlite3_callback, TODO_UPDATE_CONTEXT_OBJ, &msg);
 	
-)
 	
 	return false;
 }
@@ -193,7 +187,7 @@ bool Sqlite3PersistenceApi::load(Entity& ent, const AbstractPropertyCollection& 
 		throw LoadEntception(&ent, "Load criteria are not a valid subset.");
 	}
 	
-	const Entity::PropertyDeque& props = ent.props();
+	const Entity::PropertyDeque& props = ent.properties();
 	
 	// Start creating the select statement. We need to explicitly list all props
 	sql << "SELECT FROM " << ent.entitytype() << '(';
@@ -213,7 +207,7 @@ bool Sqlite3PersistenceApi::load(Entity& ent, const AbstractPropertyCollection& 
 		sql << loadVals[i]->name() << '=';
 		
 		// Attempt to visit the property so it's value is appended to the query.
-		if ( !loadVals[i]->visit(sv) ) {
+		if ( !loadVals[i]->accept(sv) ) {
 			string msg("Could not visit match property '");
 			msg += loadVals[i]->name();
 			msg += '\'';
@@ -243,20 +237,20 @@ bool Sqlite3PersistenceApi::del(const Entity& e) throw(Entception&)
 	stringstream sql;
 	
 		// Or is it REMOVE
-	sql << "DELETE * FROM " << e.entityname() << " WHERE(";
+	sql << "DELETE * FROM " << e.entitytype() << " WHERE(";
 	
 	// Build up the where clause by iterating the entities properties.
-	const Entity::PropertyDeque& props = e.props();
+	const Entity::PropertyDeque& props = e.properties();
 	SqliteVisitor sv(sql);
 	for ( size_t i; i < props.size(); ++i ) {
-		sql << props[i]->name << '=';
+		sql << props[i]->name() << '=';
 		
 		// Attempt to visit the property to get it to SQL text.
-		if ( !props[i]->visit(sv) ) {
+		if ( !props[i]->accept(sv) ) {
 			string msg("Could not visit property '");
-			msg += props[i]->name;
+			msg += props[i]->name();
 			msg += '\'';
-			throw DelEntception(&ent, msg.c_str());
+			throw DelEntception(&e, msg.c_str());
 		}
 		
 		if ( i < props.size() - 2 ) {	// Add comma for all but last field.
