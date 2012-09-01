@@ -2,7 +2,7 @@
 #define ENTITY_FACTORY_HPP
 /*! \file	entityfactory.hpp
  *
- * Copyright 2012. See COPYING for details.
+ * \copyright	Copyright 2012. See COPYING for details.
  */
 
 #include "entity.hpp"
@@ -26,6 +26,8 @@ struct EntityFactory
 		installPersistenceApi(ent);
 		return ent;
 	}
+
+	virtual ~EntityFactory() {}
 
 protected:
 	// Can not instantiate an entity factory.
