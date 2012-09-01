@@ -5,7 +5,9 @@
  * \copyright	Copyright 2012. See COPYING for details.
  */
 
-#include "entities/entitiyfactory.hpp"
+#include "entities/entityfactory.hpp"
+
+struct sqlite3;
 
 /*! Entity factory that installs an SQLite3 persistence API in to the entities
  * it creates.
