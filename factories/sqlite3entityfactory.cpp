@@ -1,11 +1,12 @@
 /*! \file	sqlite3entityfactory.cpp
  *
- * Copyright 2012. See COPYING for details.
+ * \copyright	Copyright 2012. See COPYING for details.
  */
-#include "entities/sqlite3entityfactory.hpp"
+#include "entities/factories/sqlite3entityfactory.hpp"
 
+#include <sqlite3.h>
 
-Sqlite3EntityFactory::Sqlite3EntityFactory(const char* dbFile) : throw(Entception&)
+Sqlite3EntityFactory::Sqlite3EntityFactory(const char* dbFile) throw(Entception&)
 {
 	// Attempt to open the database.
 	int res = sqlite3_open(dbFile, &db_);
