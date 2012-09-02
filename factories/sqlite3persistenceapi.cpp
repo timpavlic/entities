@@ -51,10 +51,10 @@ struct SqliteVisitor : public PropertyVisitorBase, PropertyVisitor<double>,
 	// Escapes a single character if it is '
 	virtual bool visit(char& c) {
 		if ( c == '\'' ) {
-			ss << "'" << c << "'";	// 'z'
+			ss << "''''";
 		} else {
+			ss << "'" << c << "'";	// 'z'
 			// '''' Four apostrophes. First is literal. Next two are escaped to an apostrophe. Last is liteal
-			ss << "''''";	
 		}
 		return true;
 	}
