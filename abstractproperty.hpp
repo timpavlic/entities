@@ -34,9 +34,7 @@ struct AbstractProperty
 	/*! Accept a PropertyVisitorBase class that all property visitors should
 	 * inherit from.
 	 */
-	virtual bool accept(PropertyVisitorBase&) {
-		return false;
-	}
+	virtual bool accept(PropertyVisitorBase&) = 0;
 	
 protected:
 	/*! Construct a property with the given name.
