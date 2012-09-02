@@ -26,12 +26,12 @@ void Entception::throwAgain(const char* file, int lineNo, const char* msg)
 	add(file, lineNo, msg);
 	throw *this;
 }
-	
-std::ostream& Entception::operator << (std::ostream& stream) const
+
+std::ostream& operator << (std::ostream& stream, const Entception& e)
 {
-	for ( unsigned int i = 0; i < traces_.size(); ++i ) {
-		stream << traces_[i].file << ":" << traces_[i].lineNo << " - ";
-		stream << traces_[i].msg << std::endl;
+	for ( unsigned int i = 0; i < e.traces_.size(); ++i ) {
+		stream << e.traces_[i].file << ":" << e.traces_[i].lineNo << " - ";
+		stream << e.traces_[i].msg << std::endl;
 	}
 	return stream;
 }

@@ -40,11 +40,9 @@ struct Entception
 	 */
 	void throwAgain(const char* file, int lineNo, const char* msg); //throw(Entception&)
 	
-	// Standard ostream is not what we want.
-	std::ostream& operator << (std::ostream& stream) const;
-	
 	/*! Print all the trace information to std::cout */
 	void print() const;
+
 	
 protected:
 	// Protected constructor for use by subclasses.
@@ -68,7 +66,12 @@ private:
 	// I don't know if I want to burden the end user with that, plus, exceptions
 	// should only happen during devel.
 	//std::shared_ptr< std::deque<Trace> > traces_;	// Shared pointer to a deque of trace information.
+
+	friend std::ostream& operator << (std::ostream&, const Entception& e);
 };
+
+// Standard ostream is not what we want.
+std::ostream& operator << (std::ostream& stream, const Entception& e);
 
 /*! Macro for creating an Entception. It uses the same name as the class, but I
  * consider this to be alright as it makes the class easy to use, meaning it
