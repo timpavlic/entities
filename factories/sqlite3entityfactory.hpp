@@ -12,8 +12,9 @@ struct sqlite3;
 /*! Entity factory that installs an SQLite3 persistence API in to the entities
  * it creates.
  */
-struct Sqlite3EntityFactory : public EntityFactory
+class Sqlite3EntityFactory : public EntityFactory
 {
+public:
 	/*! Create an SQLite3 entitiy factory.
 	 *
 	 * \param	dbFile	Name of the database file to open and operate on.

@@ -11,8 +11,9 @@
 /*! The entity factory is a base class defining a factory that can create
  * entities.
  */
-struct EntityFactory
+class EntityFactory
 {
+public:
 	/*! Create an entity of the templated entity type.
 	 * This entity will have a persistence API installed in to it.
 	 *

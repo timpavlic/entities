@@ -1,6 +1,6 @@
 /*! \file	entity.hpp
  *
- * Copyright 2012. See COPYING for details.
+ * \copyright	Copyright 2012. See COPYING for details.
  */
  
 #include "entity.hpp"

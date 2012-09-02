@@ -2,14 +2,14 @@
 #define ABSTRACT_PROPERTY_HPP
 /*! \file	abstractproperty.hpp
  *
- * Copyright 2012. See COPYING for details.
+ * \copyright	Copyright 2012. See COPYING for details.
  */
 
 #include <deque>
  
 #include "propertyvisitor.hpp"
 
-struct Entity;
+class Entity;
 
 /*! The abstract property base class provides the interface required for
  * the templated property class.
@@ -23,8 +23,9 @@ struct Entity;
  * implementing an entities persistence backend without needing to modify this
  * library's source.
  */
-struct AbstractProperty
+class AbstractProperty
 {
+public:
 	virtual ~AbstractProperty() {}
 	/*! Get the name of this property. This is the name that is assigned at
 	 * construction.

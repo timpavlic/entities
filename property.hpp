@@ -2,7 +2,7 @@
 #define PROPERTY_HPP
 /*! \file	entityfactory.hpp
  *
- * Copyright 2012. See COPYING for details.
+ * \copyright	Copyright 2012. See COPYING for details.
  */
 
  
@@ -12,8 +12,9 @@
  * \tparam	Data type to wrap up and assign a name against.
  */
 template<typename T>
-struct Property : public AbstractProperty
+class Property : public AbstractProperty
 {
+public:
 	/*!Create a property, giving it a name and owner.
 	 */
 	Property(const char* name, Entity* owner) : AbstractProperty(name, owner) {}
@@ -54,8 +55,9 @@ private:
  * Property collections are important for persistence, as it allows loading and
  * updating to be performed with incomplete entity data.
  */
-struct PropertyCollection : public AbstractPropertyCollection
+class PropertyCollection : public AbstractPropertyCollection
 {
+public:
 	/*! Add a property to the collection, keeping it's name but assigning it a
 	 * new value.
 	 *

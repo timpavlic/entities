@@ -2,18 +2,19 @@
 #define PERSISTENCE_API_HPP
 /*! \file	entityfactory.hpp
  *
- * Copyright 2012. See COPYING for details.
+ * \copyright	Copyright 2012. See COPYING for details.
  */
 
 #include "entception.hpp"
 
-struct Entity;
+class Entity;
 
 /*! API for defining how entities can be saved, loaded and deleted from
  * persistent storage.
  */
-struct PersistenceApi
+class PersistenceApi
 {
+public:
 	/*! Save the given entity to persistant storage. Implementors will assume
 	 * that this means that the entity has never been saved before.
 	 *

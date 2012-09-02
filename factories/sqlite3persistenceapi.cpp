@@ -22,10 +22,11 @@ int sqlite3_callback(void* context, int number, char** something, char** morethi
 //
 // How do we allow library users to define SQLite3 Property visitors for their
 // own types.???
-struct SqliteVisitor : public PropertyVisitorBase, PropertyVisitor<double>,
+class SqliteVisitor : public PropertyVisitorBase, PropertyVisitor<double>,
 	PropertyVisitor<int>, PropertyVisitor<unsigned int>, PropertyVisitor<bool>,
 	PropertyVisitor<char>, PropertyVisitor<const char*>
 {
+public:
 	SqliteVisitor(stringstream& s) : ss(s) {}
 	
 	virtual bool visit(double& d) {

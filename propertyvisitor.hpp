@@ -12,8 +12,9 @@
 /*! The base class for all property visitors. This must be the first class
  * inherited from when creating a property visitor.
  */
-struct PropertyVisitorBase
+class PropertyVisitorBase
 {
+public:
 	virtual ~PropertyVisitorBase() {}
 };
 
@@ -22,8 +23,9 @@ struct PropertyVisitorBase
  * the encapsulated type.
  */
 template <typename EncapsulatedType>
-struct PropertyVisitor
+class PropertyVisitor
 {
+public:
 	virtual bool visit(EncapsulatedType& val) = 0;
 };
 

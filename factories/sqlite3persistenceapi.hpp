@@ -11,8 +11,9 @@
 struct sqlite3;
 
 /*! Persistence implementation for SQLite 3. */
-struct Sqlite3PersistenceApi : public PersistenceApi
+class Sqlite3PersistenceApi : public PersistenceApi
 {
+public:
 	virtual bool save(const Entity&) throw(Entception&);
 	
 	virtual bool update(const Entity& ent, const AbstractPropertyCollection& updates) throw(Entception&);
@@ -21,6 +22,7 @@ struct Sqlite3PersistenceApi : public PersistenceApi
 	
 	virtual bool del(const Entity&) throw(Entception&);
 	
+	virtual ~Sqlite3PersistenceApi() {}
 private:
 	sqlite3* db_;
 };

@@ -2,7 +2,7 @@
 #define ENTITY_HPP
 /*! \file	entity.hpp
  *
- * Copyright 2012. See COPYING for details.
+ * \copyright	Copyright 2012. See COPYING for details.
  */
 
 #include <deque>
@@ -16,8 +16,9 @@
  * storage (which is usually a database).
  * Entity factories are responsible for setting their persistence.
  */
-struct Entity
+class Entity
 {
+public:
 	/*! Create an entity.
 	 * \param	entitytype	Name of the entity class. This must be a string literal
 	 *			and can not change during the lifetime of the class.

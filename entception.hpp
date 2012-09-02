@@ -10,7 +10,7 @@
 #include <deque>
 #include <iostream>
 
-struct Entity;
+class Entity;
 
 /*! Exception base class for the entities library. It is named Entception as
  * a portmanteau of Entity and Exception. This should avoid any collisions with
@@ -20,8 +20,9 @@ struct Entity;
  * for better debugging of the whole chain of events when modifying an entity
  * in a persistent store.
  */
-struct Entception
+class Entception
 {
+public:
 	/*! Create an entity exception object, with the file and line number that
 	 * the exception is occurring at, along with a useful message.
 	 *
