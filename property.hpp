@@ -75,7 +75,7 @@ public:
 	 */
 	template <typename T>
 	void add(Property<T>& prop, const T& newVal) {
-		Property<T>* p = new Property<T>( prop.name(), newVal );
+		Property<T>* p = new Property<T>( prop.propertyName(), newVal );
 		props_.push_back(p);
 	}
 	
@@ -85,7 +85,7 @@ public:
 	 */
 	template <typename T>
 	void add(Property<T>& prop) {
-		Property<T>* p = new Property<T>( prop.name(), prop() );
+		Property<T>* p = new Property<T>( prop.propertyName(), prop() );
 		props_.push_back(p);
 	}
 	
