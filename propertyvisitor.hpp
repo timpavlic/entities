@@ -8,25 +8,62 @@
  * an AbstractProperty* is available, the visitor pattern is used to perform
  * a double dispatch.
  */
+#include <string>
 
-/*! The base class for all property visitors. This must be the first class
- * inherited from when creating a property visitor.
+/** The only string primitive supported is a custom class that has a pointer
+ * and length.
  */
-class PropertyVisitorBase
+class StringPrimitive
 {
 public:
-	virtual ~PropertyVisitorBase() {}
+	StringPrimitive() : data_(NULL), len_(0) {}
+	StringPrimitive(const char* str, size_t len) : data_(str), len_(len) {}
+	const char* data() const { return data_; }
+	size_t len() const { return len_; }
+private:
+	const char* data_;
+	size_t len_;
 };
 
-/*! Template visitor class which is able to receive a visit from a value.
- * Inheritors of this class will need to implement the visit function for
- * the encapsulated type.
- */
-template <typename EncapsulatedType>
-class PropertyVisitor
+/** And a 16bit version for widestrings / UTF16 */
+class String16Primitive
 {
 public:
-	virtual bool visit(EncapsulatedType& val) = 0;
+	String16Primitive() : data_(NULL), len_(0) {}
+	String16Primitive(const wchar_t* str, size_t len) : data_(str), len_(len) {}
+	const wchar_t* data() const { return data_; }
+	size_t len() const { return len_; }
+private:
+	const wchar_t* data_;
+	size_t len_;
 };
+
+/** Visitor class used for reading from properties. */
+class ReadVisitor
+{
+public:
+	virtual bool visit(const bool& b) = 0;
+	virtual bool visit(const char& c) = 0;
+	virtual bool visit(const int& i) = 0;
+	virtual bool visit(const unsigned int& ui) = 0;
+	virtual bool visit(const double& d) = 0;
+	virtual bool visit(const StringPrimitive& str) = 0;
+
+	virtual ~ReadVisitor() {}
+};
+
+/** Visitor class used for writing to properties. */
+class WriteVisitor
+{
+public:
+	virtual void visit(bool& b) = 0;
+	virtual void visit(char& c) = 0;
+	virtual void visit(int& i) = 0;
+	virtual void visit(unsigned int& ui) = 0;
+	virtual void visit(StringPrimitive& str) = 0;
+
+	virtual ~WriteVisitor() {}
+};
+
 
 #endif

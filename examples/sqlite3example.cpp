@@ -14,6 +14,14 @@
 
 using namespace std;
 
+typedef enum {
+	UNDISCLOSED,
+	MALE,
+	FEMALE,
+} Gender;
+
+template<> class PersistenceTypeConversion<Gender> : public EnumHelper<Gender> {};
+
 /** Person entity. Assume we have a database with a table called "person" and
  * the fields "name" and "age".
  */
@@ -21,11 +29,14 @@ struct Person : public Entity
 {
 	Property<string>	name;
 	Property<int>		age;
+	Property<Gender>	gender;
 
 	Person() : Entity("person"),
 		name("name", this),
-		age("age", this, 0)
+		age("age", this, 0),
+		gender("gender", this, UNDISCLOSED)
 	{}
+
 };
 
 /** @todo	How do I define how a std::string should be visited for sqlite3 */
@@ -36,8 +47,9 @@ int main()
 
 	Person* person = factory.create<Person>();
 
-	person->name = "Winnifred";
+	person->name = std::string("Winnifred");
 	person->age = "71";
+	person->gender = MALE;
 
 	try {
 		person->save();

@@ -19,7 +19,7 @@ printtargets :
 	@echo                    folder you have the entities repo cloned in.
 
 entexample: $(COMMON_OBJECTS) entexample.obj
-	g++ -o $@ $(INCLUDES) $(COMMON_OBJECTS)
+	g++ -o $@ $(INCLUDES) $^
 	
 sqlite3example: $(COMMON_OBJECTS) sqlite3example.obj sqlite3.obj sqlite3entityfactory.obj sqlite3persistenceapi.obj
 	g++ -o $@ $(INCLUDES) $^
@@ -31,7 +31,7 @@ sqlite3example: $(COMMON_OBJECTS) sqlite3example.obj sqlite3.obj sqlite3entityfa
 	gcc -c $< -o $@ $(INCLUDES)
 	
 clean:
-	rm $(COMMON_OBJECTS)
+	del *.obj
 
 printinfo:
 	@echo COMMON_OBJECTS  = $(COMMON_OBJECTS)

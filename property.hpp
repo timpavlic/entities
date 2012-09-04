@@ -7,6 +7,7 @@
 
  
 #include "abstractproperty.hpp"
+#include "conversion.hpp"
 
 /*! Template property class which inherits from the AbstractProperty class.
  * \tparam	Data type to wrap up and assign a name against.
@@ -34,16 +35,22 @@ public:
 	const T& val() const { return val_; }
 	
 	/*! Set the value of the property. */
+	void operator = (const T& newVal) { val_ = newVal; }
 	void set(const T& newVal) { val_ = newVal; }
-	
-	/*! Override the virtual accept method, which will allow a visitor for the
-	 * encapsulated type T to be used on this property.
+
+	/*! Override the virtual accept reader method, which will allow a read
+	 * visitor for the encapsulated type T to be used on this property.
 	 */
-	virtual bool accept(PropertyVisitorBase& pv) {
-		// Call the protected static method.
-		return acceptVisitor(val_, pv);
+	virtual bool acceptReader(ReadVisitor& rv) {
+		return rv.visit(PersistenceTypeConversion<T>::toPrimitive(val_));
 	}
-	
+
+	virtual void acceptWriter(WriteVisitor& wv) {
+		typename PersistenceTypeConversion<T>::PrimitiveType p;
+		wv.visit(p);
+		val_ = PersistenceTypeConversion<T>::fromPrimitive(p);
+	}
+
 private:
 	T val_;
 };

@@ -57,6 +57,7 @@ public:
 	 */
 	virtual bool del(const Entity& e) throw(Entception&) = 0;
 
+	virtual ~PersistenceApi() {}
 };
 
 #endif

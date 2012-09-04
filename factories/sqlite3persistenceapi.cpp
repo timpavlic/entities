@@ -4,6 +4,8 @@
  */
 #include <sstream>
 
+#include <iostream>
+
 #include <sqlite3.h>
 
 #include "sqlite3persistenceapi.hpp"
@@ -18,62 +20,52 @@ int sqlite3_callback(void* context, int number, char** something, char** morethi
 	return 0;
 }
 
-// Property visitor implementation.
-//
-// How do we allow library users to define SQLite3 Property visitors for their
-// own types.???
-class SqliteVisitor : public PropertyVisitorBase, PropertyVisitor<double>,
-	PropertyVisitor<int>, PropertyVisitor<unsigned int>, PropertyVisitor<bool>,
-	PropertyVisitor<char>, PropertyVisitor<const char*>
+class Sqlite3ReadVisitor : public ReadVisitor
 {
 public:
-	SqliteVisitor(stringstream& s) : ss(s) {}
-	
-	virtual bool visit(double& d) {
-		ss << d;
-		return true;
-	}
-	
-	virtual bool visit(int& i) {
-		ss << i;
-		return true;
-	}
-	
-	virtual bool visit(unsigned int& i) {
-		ss << i;
-		return true;
-	}
-	
-	virtual bool visit(bool& b) {
+	Sqlite3ReadVisitor(stringstream& s) : ss(s) {}
+
+	virtual bool visit(const bool& b) {
 		ss << (b ? "true" : "false");
 		return true;
 	}
 	
-	// Escapes a single character if it is '
-	virtual bool visit(char& c) {
-		if ( c == '\'' ) {
-			ss << "''''";
-		} else {
-			ss << "'" << c << "'";	// 'z'
-			// '''' Four apostrophes. First is literal. Next two are escaped to an apostrophe. Last is liteal
-		}
+	virtual bool visit(const char& c) {
+		return false;
+	}
+
+	virtual bool visit(const int& i) {
+		ss << i;
 		return true;
 	}
-	
-	// Escapes the string.
-	virtual bool visit(const char*& s) {
+
+	virtual bool visit(const unsigned int& i) {
+		ss << i;
+		return true;
+	}
+
+	virtual bool visit(const double& d) {
+		ss << d;
+		return true;
+	}
+
+	virtual bool visit(const StringPrimitive& str)
+	{
 		ss << "'";
-		for ( unsigned int i=0; s[i]; ++i ) {
-			if ( s[i] == '\'' ) {
+		for ( unsigned int i = 0; i < str.len(); ++i ) {
+			if ( str.data()[i] == '\'' ) {
 				ss << "''";
 			} else {
-				ss << s[i];
+				ss << str.data()[i];
 			}
 		}
 		ss << "'";
 		return true;
 	}
 
+
+	virtual ~Sqlite3ReadVisitor() {}
+	
 private:
 	stringstream& ss;
 };
@@ -90,28 +82,30 @@ bool Sqlite3PersistenceApi::save(const Entity& e) throw(Entception&)
 	ss << "INSERT INTO " << e.entitytype() << '(';
 	// Get all the property names
 	for ( unsigned int i=0; i<props.size(); ++i ) {
-		ss << props[i]->name();
-		if ( i < props.size() -2 ) {
+		ss << props[i]->propertyName();
+		cout << props[i]->propertyName() << endl;
+		if ( i < (props.size() - 1) ) {
 			ss << ',';
 		}
 	}
-	SqliteVisitor sv(ss);
+	Sqlite3ReadVisitor reader(ss);
 	ss << ") VALUES(";
 	for ( unsigned int i=0; i<props.size(); ++i ) {
 		// Attempt to visit the property.
-		if ( !props[i]->accept(sv) ) {
+		if ( !props[i]->acceptReader(reader) ) {
 			string msg("Could not visit property '");
-			msg += props[i]->name();
+			msg += props[i]->propertyName();
 			msg += '\'';
 			throw SaveEntception(&e, msg.c_str());
 		}
-		if ( i < props.size() - 2 ) {	// Add comma between all but last value in query
+		if ( i < props.size() - 1 ) {	// Add comma between all but last value in query
 			ss << ',';
 		}
 	}
 	ss << ");";	// Terminate the query
 	
 	// TODO: Call sqlite3_exec or w/e the func is.
+	cout << "Would like to execute this query: " << ss.str() << endl;
 	
 	return false;
 }
@@ -131,19 +125,19 @@ bool Sqlite3PersistenceApi::update(const Entity& ent, const AbstractPropertyColl
 	
 	// Get all the property names for the update
 	for ( unsigned int i = 0; i < newVals.size(); ++i ) {
-		sql << newVals[i]->name();
+		sql << newVals[i]->propertyName();
 		if ( i < newVals.size() -2 ) {
 			sql << ',';
 		}
 	}
 	// Specify the update values.
-	SqliteVisitor sv(sql);
+	Sqlite3ReadVisitor reader(sql);
 	sql << ") VALUES(";
 	for ( unsigned int i = 0; i < newVals.size(); ++i ) {
 		// Attempt to visit the value.
-		if ( !newVals[i]->accept(sv) ) {
+		if ( !newVals[i]->acceptReader(reader) ) {
 			string msg("Could not visit update property '");
-			msg += newVals[i]->name();
+			msg += newVals[i]->propertyName();
 			msg += '\'';
 			throw UpdateEntception(&ent, msg);
 		}
@@ -154,12 +148,12 @@ bool Sqlite3PersistenceApi::update(const Entity& ent, const AbstractPropertyColl
 	const Entity::PropertyDeque& props = ent.properties();
 	for ( unsigned int i = 0; i < props.size(); ++i ) {
 		// Add the property names first.
-		sql << props[i]->name() << '=';
+		sql << props[i]->propertyName() << '=';
 		
 		// Now attempt to visit the value.
-		if ( !props[i]->accept(sv) ) {
+		if ( !props[i]->acceptReader(reader) ) {
 			string msg("Could not visit match property '");
-			msg += props[i]->name();
+			msg += props[i]->propertyName();
 			msg += '\'';
 			throw UpdateEntception(&ent, msg);
 		}
@@ -193,7 +187,7 @@ bool Sqlite3PersistenceApi::load(Entity& ent, const AbstractPropertyCollection& 
 	// Start creating the select statement. We need to explicitly list all props
 	sql << "SELECT FROM " << ent.entitytype() << '(';
 	for ( size_t i = 0; i < props.size(); ++i ) {
-		sql << props[i]->name();
+		sql << props[i]->propertyName();
 		
 		if ( i < props.size() - 2 ) {
 			sql << ',';
@@ -202,15 +196,15 @@ bool Sqlite3PersistenceApi::load(Entity& ent, const AbstractPropertyCollection& 
 	sql << ") WHERE(";
 	
 	// Now we need to build the where clause equalities.
-	SqliteVisitor sv(sql);
+	Sqlite3ReadVisitor reader(sql);
 	const Entity::PropertyDeque& loadVals = criteria.props();
 	for ( size_t i = 0; i < loadVals.size(); ++i ) {
-		sql << loadVals[i]->name() << '=';
+		sql << loadVals[i]->propertyName() << '=';
 		
 		// Attempt to visit the property so it's value is appended to the query.
-		if ( !loadVals[i]->accept(sv) ) {
+		if ( !loadVals[i]->acceptReader(reader) ) {
 			string msg("Could not visit match property '");
-			msg += loadVals[i]->name();
+			msg += loadVals[i]->propertyName();
 			msg += '\'';
 			throw LoadEntception(&ent, msg.c_str());
 		}
@@ -227,7 +221,8 @@ bool Sqlite3PersistenceApi::load(Entity& ent, const AbstractPropertyCollection& 
 	//}
 	
 	// TODO: Will need a visitor that will perform assignment. Does Sqlite give us strings, ints, blobs?
-	SqliteVisitor assigner(sql);
+	//Sqlite3ReadVisitor assigner(sql);
+	//Sqlite3WriteVisitor writer(sql);
 	// Now 
 	
 	return NULL;
@@ -242,14 +237,14 @@ bool Sqlite3PersistenceApi::del(const Entity& e) throw(Entception&)
 	
 	// Build up the where clause by iterating the entities properties.
 	const Entity::PropertyDeque& props = e.properties();
-	SqliteVisitor sv(sql);
+	Sqlite3ReadVisitor reader(sql);
 	for ( size_t i; i < props.size(); ++i ) {
-		sql << props[i]->name() << '=';
+		sql << props[i]->propertyName() << '=';
 		
 		// Attempt to visit the property to get it to SQL text.
-		if ( !props[i]->accept(sv) ) {
+		if ( !props[i]->acceptReader(reader) ) {
 			string msg("Could not visit property '");
-			msg += props[i]->name();
+			msg += props[i]->propertyName();
 			msg += '\'';
 			throw DelEntception(&e, msg.c_str());
 		}

@@ -30,12 +30,13 @@ public:
 	/*! Get the name of this property. This is the name that is assigned at
 	 * construction.
 	 */
-	const char* name() const { return name_; }
-	
+	const char* propertyName() const { return name_; }
+
 	/*! Accept a PropertyVisitorBase class that all property visitors should
 	 * inherit from.
 	 */
-	virtual bool accept(PropertyVisitorBase&) = 0;
+	virtual bool acceptReader(ReadVisitor&) = 0;
+	virtual void acceptWriter(WriteVisitor&) = 0;
 	
 protected:
 	/*! Construct a property with the given name.
@@ -56,21 +57,30 @@ protected:
 	 */
 	AbstractProperty(const char* name) : name_(name) {}
 	
+#if 0
 	/*! Protected static method available for concrete Property classes to call.
 	 */
+	/*
+	template <typename PrimitiveType>
+	static bool acceptVisitor(PrimitiveType& val, PropertyVisitor& visitor)
+	*/
 	template <typename EncapsulatedType>
 	static bool acceptVisitor(EncapsulatedType& val, PropertyVisitorBase& visitor)
 	{
+		//return visitor.visit(val);
+
 		PropertyVisitor<EncapsulatedType>* pv;
 		pv = dynamic_cast< PropertyVisitor<EncapsulatedType>* >(&visitor);
 		
 		if ( pv ) {
 			return pv->visit(val);
 		}
+
 		return false;
 	}
+#endif
 	
-	
+private:
 	const char* name_;
 };
 

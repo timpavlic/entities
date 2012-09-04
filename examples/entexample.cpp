@@ -23,6 +23,7 @@ struct TestEnt : public Entity
 	Property<Integer> wrapped;
 };
 
+/*
 struct FlatFileSaveVisitor : public PropertyVisitorBase, public PropertyVisitor<int>,
 	public PropertyVisitor<Integer>
 {
@@ -40,7 +41,7 @@ struct FlatFileSaveVisitor : public PropertyVisitorBase, public PropertyVisitor<
 	
 	ofstream& file;
 };
-
+*/
 
 struct FlatFilePersistenceApi : public PersistenceApi
 {

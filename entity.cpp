@@ -52,7 +52,7 @@ bool Entity::del(void) throw(Entception&)
 AbstractProperty* Entity::operator [] (const char* propName) const
 {
 	for ( unsigned int i=0; i<properties_.size(); ++i ) {
-		if ( strcmp(properties_[i]->name(), propName) == 0 )	return properties_[i];
+		if ( strcmp(properties_[i]->propertyName(), propName) == 0 )	return properties_[i];
 	}
 	return NULL;
 }
@@ -67,7 +67,7 @@ bool Entity::isSubset(const AbstractPropertyCollection& collection) const
 		// ... And check to see if it exists in this entity's properties.
 		unsigned int j;
 		for ( j = 0; j < properties_.size(); ++j ) {
-			if ( strcmp(properties_[j]->name(), prps[i]->name()) == 0 )	break;	// Found
+			if ( strcmp(properties_[j]->propertyName(), prps[i]->propertyName()) == 0 )	break;	// Found
 		}
 		if ( j >= properties_.size() ) {
 			return false;	// Property was not found in entity.
