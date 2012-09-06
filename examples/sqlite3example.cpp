@@ -13,14 +13,18 @@
 #include "factories/sqlite3entityfactory.hpp"
 
 using namespace std;
+using namespace tdk::ent;
 
 typedef enum {
 	UNDISCLOSED,
 	MALE,
 	FEMALE,
 } Gender;
-
+namespace tdk {
+namespace ent {
 template<> class PersistenceTypeConversion<Gender> : public EnumHelper<Gender> {};
+}	// End namespace ent
+}	// End namespace tdk
 
 /** Person entity. Assume we have a database with a table called "person" and
  * the fields "name" and "age".
@@ -48,7 +52,7 @@ int main()
 	Person* person = factory.create<Person>();
 
 	person->name = std::string("Winnifred");
-	person->age = "71";
+	//person->age = "71";
 	person->gender = MALE;
 
 	try {

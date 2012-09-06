@@ -10,6 +10,9 @@
 #include <deque>
 #include <iostream>
 
+namespace tdk {
+namespace ent {
+
 class Entity;
 
 /*! Exception base class for the entities library. It is named Entception as
@@ -165,5 +168,8 @@ private:
 
 #define DelEntception(ent, msg)		DelEntception(__FILE__, __LINE__, ent, msg)
 
+
+}	// End namespace ent
+}	// End namespace tdk
 
 #endif

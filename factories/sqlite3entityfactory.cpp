@@ -7,17 +7,9 @@
 
 #include <sqlite3.h>
 
-namespace {
+namespace tdk {
+namespace ent {
 
-// We use a function with a static member to get the sqlite3 persistene to ensure
-// that it will be initialised when needed.
-Sqlite3PersistenceApi* sqlite3_persistence()
-{
-	static Sqlite3PersistenceApi persistence;
-	return &persistence;
-}
-
-}
 
 Sqlite3EntityFactory::Sqlite3EntityFactory(const char* dbFile) throw(Entception&)
 {
@@ -27,6 +19,8 @@ Sqlite3EntityFactory::Sqlite3EntityFactory(const char* dbFile) throw(Entception&
 	if ( res != SQLITE_OK ) {
 		throw Entception("Failed to open database file");
 	}
+
+	persistence_.setDb(db_);
 }
 
 Sqlite3EntityFactory::~Sqlite3EntityFactory()
@@ -40,5 +34,9 @@ Sqlite3EntityFactory::~Sqlite3EntityFactory()
 
 void Sqlite3EntityFactory::installPersistenceApi(Entity* e)
 {
-	e->setPersistence( sqlite3_persistence() );
+	e->setPersistence( &persistence_ );
 }
+
+
+}	// End namespace ent
+}	// End namespace tdk

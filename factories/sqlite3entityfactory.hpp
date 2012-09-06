@@ -6,8 +6,12 @@
  */
 
 #include "entities/entityfactory.hpp"
+#include "entities/factories/sqlite3persistenceapi.hpp"
 
 struct sqlite3;
+
+namespace tdk {
+namespace ent {
 
 /*! Entity factory that installs an SQLite3 persistence API in to the entities
  * it creates.
@@ -27,7 +31,11 @@ public:
 	
 private:
 	virtual void installPersistenceApi(Entity* e);
+	Sqlite3PersistenceApi persistence_;
 	sqlite3* db_;
 };
+
+}	// End namespace ent
+}	// End namespace tdk
 
 #endif

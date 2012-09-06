@@ -11,6 +11,9 @@
 
 #undef Entception
 
+namespace tdk {
+namespace ent {
+
 Entception::Entception(const char* file, int lineNo, const char* msg)
 {
 	add(file, lineNo, msg);
@@ -101,3 +104,6 @@ void DelEntception::buildmsg(const char* file, int lineNo, const Entity* ent, co
 	
 	add(file, lineNo, str);
 }
+
+}	// End namespace ent
+}	// End namespace tdk

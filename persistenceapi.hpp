@@ -7,6 +7,10 @@
 
 #include "entception.hpp"
 
+
+namespace tdk {
+namespace ent {
+
 class Entity;
 
 /*! API for defining how entities can be saved, loaded and deleted from
@@ -59,5 +63,8 @@ public:
 
 	virtual ~PersistenceApi() {}
 };
+
+}	// End namespace ent
+}	// End namespace tdk
 
 #endif

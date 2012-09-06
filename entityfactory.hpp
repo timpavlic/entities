@@ -8,6 +8,9 @@
 #include "entity.hpp"
 #include "persistenceapi.hpp"
 
+namespace tdk {
+namespace ent {
+
 /*! The entity factory is a base class defining a factory that can create
  * entities.
  */
@@ -41,5 +44,8 @@ protected:
 	 */
 	virtual void installPersistenceApi(Entity* e) = 0;
 };
+
+}	// End namespace ent
+}	// End namespace tdk
 
 #endif

@@ -6,6 +6,9 @@
 #include "entity.hpp"
 #include <cstring>
 
+namespace tdk {
+namespace ent {
+
 void Entity::addProperty(AbstractProperty* p)
 {
 	properties_.push_back(p);
@@ -76,3 +79,6 @@ bool Entity::isSubset(const AbstractPropertyCollection& collection) const
 	
 	return true;
 }
+
+}	// End namespace ent
+}	// End namespace tdk

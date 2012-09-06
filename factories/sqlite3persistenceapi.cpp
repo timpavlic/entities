@@ -11,14 +11,9 @@
 #include "sqlite3persistenceapi.hpp"
 
 using namespace std;
+using namespace tdk::ent;
 
 namespace {
-
-int sqlite3_callback(void* context, int number, char** something, char** morethings)
-{
-
-	return 0;
-}
 
 class Sqlite3ReadVisitor : public ReadVisitor
 {
@@ -70,8 +65,57 @@ private:
 	stringstream& ss;
 };
 
+
+class Sqlite3WriteVisitor : public WriteVisitor
+{
+public:
+	const char* valStr;	// Value to assign, but as a string from sqlite3 callback.
+
+	virtual void visit(bool& b) {
+
+	}
+
+	virtual void visit(char& c) {
+
+	}
+
+	virtual void visit(int& i) {
+
+	}
+
+	virtual void visit(unsigned int& ui) {
+
+	}
+
+	virtual void visit(StringPrimitive& str) {
+
+	}
+};
+
+/** Sqlite3 callback implementation for entity saving operations.
+ *
+ * \param	propDeque	The context should be a pointer to a deque of AbstractProperty pointers.
+ * \param	colCount	Number of columns retreived.
+ * \param	colNames	Names of the columns. Should match properties in an Entity.
+ * \param	colData		Data retreived for each column.
+ */
+int save_callback(void* propDeque, int colCount, char** colNames, char** colData)
+{
+	const deque<AbstractProperty*>& props = *reinterpret_cast< deque<AbstractProperty*>* >(propDeque);
+
+	cout << "We have " << colCount << " columns" << endl;
+
+	Sqlite3WriteVisitor vis;
+
+
+	return 0;
+}
+
 }	// End anon namespace
 
+
+namespace tdk {
+namespace ent {
 
 bool Sqlite3PersistenceApi::save(const Entity& e) throw(Entception&)
 {
@@ -105,8 +149,20 @@ bool Sqlite3PersistenceApi::save(const Entity& e) throw(Entception&)
 	ss << ");";	// Terminate the query
 	
 	// TODO: Call sqlite3_exec or w/e the func is.
+	char* sqliteErr = NULL;
 	cout << "Would like to execute this query: " << ss.str() << endl;
+	int res = sqlite3_exec(db_, ss.str().c_str(), save_callback, const_cast<void*>(reinterpret_cast<const void*>(&props)), &sqliteErr);
 	
+	if ( res != SQLITE_OK ) {
+		cout << "ERROR. result = " << res << endl;
+	} else {
+		cout << "Query executed ok" << endl;
+	}
+	if ( sqliteErr ) {
+		cout << "Sqlite3 error: " << sqliteErr << endl;
+		sqlite3_free(sqliteErr);
+	}
+
 	return false;
 }
 
@@ -261,3 +317,6 @@ bool Sqlite3PersistenceApi::del(const Entity& e) throw(Entception&)
 	
 	return false;
 }
+
+}	// End namespace ent
+}	// End namespace tdk

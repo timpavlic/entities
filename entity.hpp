@@ -10,6 +10,9 @@
 #include "persistenceapi.hpp"
 #include "entception.hpp"
 
+namespace tdk {
+namespace ent {
+
 /*! Entities essentially represent a row / record from a database table. This is
  * the record part of the active record pattern.
  * They have the ability to be saved, updated and deleted from their persistent
@@ -94,5 +97,8 @@ private:
 	const char* entitytype_;
 	PropertyDeque properties_;
 };
+
+}	// End namespace ent
+}	// End namespace tdk
 
 #endif

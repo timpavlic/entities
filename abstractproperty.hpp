@@ -9,6 +9,9 @@
  
 #include "propertyvisitor.hpp"
 
+namespace tdk {
+namespace ent {
+
 class Entity;
 
 /*! The abstract property base class provides the interface required for
@@ -57,29 +60,6 @@ protected:
 	 */
 	AbstractProperty(const char* name) : name_(name) {}
 	
-#if 0
-	/*! Protected static method available for concrete Property classes to call.
-	 */
-	/*
-	template <typename PrimitiveType>
-	static bool acceptVisitor(PrimitiveType& val, PropertyVisitor& visitor)
-	*/
-	template <typename EncapsulatedType>
-	static bool acceptVisitor(EncapsulatedType& val, PropertyVisitorBase& visitor)
-	{
-		//return visitor.visit(val);
-
-		PropertyVisitor<EncapsulatedType>* pv;
-		pv = dynamic_cast< PropertyVisitor<EncapsulatedType>* >(&visitor);
-		
-		if ( pv ) {
-			return pv->visit(val);
-		}
-
-		return false;
-	}
-#endif
-	
 private:
 	const char* name_;
 };
@@ -98,5 +78,8 @@ protected:
 	std::deque<AbstractProperty*> props_;
 	AbstractPropertyCollection() {}
 };
+
+}	// End namespace ent
+}	// End namespace tdk
 
 #endif

@@ -5,9 +5,13 @@
  * \copyright	Copyright 2012. See COPYING for details.
  */
 
- 
+#include <iostream>
 #include "abstractproperty.hpp"
 #include "conversion.hpp"
+
+namespace tdk {
+namespace ent {
+
 
 /*! Template property class which inherits from the AbstractProperty class.
  * \tparam	Data type to wrap up and assign a name against.
@@ -31,11 +35,16 @@ public:
 	Property(const char* name, const T& value) : AbstractProperty(name), val_(value) {}
 	
 	/*! Get the value of the property. */
-	const T& operator () () const { return val_; }
+	//const T& operator () () const { return val_; }
 	const T& val() const { return val_; }
 	
 	/*! Set the value of the property. */
-	void operator = (const T& newVal) { val_ = newVal; }
+	Property<T>& operator = (const T& newVal) {
+		std::cout << "operator =. Assigning " << newVal << std::endl;
+		val_ = newVal;
+		return *this;
+	}
+
 	void set(const T& newVal) { val_ = newVal; }
 
 	/*! Override the virtual accept reader method, which will allow a read
@@ -52,6 +61,7 @@ public:
 	}
 
 private:
+	Property<T>(const Property<T>& other) {}
 	T val_;
 };
 
@@ -97,4 +107,8 @@ public:
 	}
 
 };
+
+}	// End namespace ent
+}	// End namespace tdk
+
 #endif

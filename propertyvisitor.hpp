@@ -10,6 +10,9 @@
  */
 #include <string>
 
+namespace tdk {
+namespace ent {
+
 /** The only string primitive supported is a custom class that has a pointer
  * and length.
  */
@@ -65,5 +68,7 @@ public:
 	virtual ~WriteVisitor() {}
 };
 
+}	// End namespace ent
+}	// End namespace tdk
 
 #endif

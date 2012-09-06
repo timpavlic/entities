@@ -6,6 +6,9 @@
 #include "abstractproperty.hpp"
 #include "entity.hpp"
 
+namespace tdk {
+namespace ent {
+
 // Protected ctor
 AbstractProperty::AbstractProperty(const char* name, Entity* owner) : name_(name)
 {
@@ -13,3 +16,6 @@ AbstractProperty::AbstractProperty(const char* name, Entity* owner) : name_(name
 	
 	owner->addProperty(this);
 }
+
+}	// End namespace ent
+}	// End namespace tdk

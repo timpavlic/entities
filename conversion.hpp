@@ -9,6 +9,9 @@
  */
 #include <string>
 
+namespace tdk {
+namespace ent {
+
 /** Traits class used for converting user types to one of the 'primitive' types
  * that the Entity visitor classes can handle.
  */
@@ -66,5 +69,8 @@ struct EnumHelper
 		return static_cast<Enum>(i);
 	}
 };
+
+}	// End namespace ent
+}	// End namespace tdk
 
 #endif
